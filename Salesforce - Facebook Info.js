@@ -80,10 +80,10 @@ if (records.length < 1) {
             for (var n = 0; n < cLeads; n++) {
                 var leadObj = leads[n];
                 var url = leadObj.Website;
-console.log(leadObj.Quantidade_fas_seguidores__c);
-console.log(leadObj.Description);
+                console.log(leadObj.Quantidade_fas_seguidores__c);
+                console.log(leadObj.Description);
                 var fanBase = leadObj.Quantidade_fas_seguidores__c;
-
+                // Le a pagina do usuário procurando pelo URL do facebook    
                 jQuery.ajax({
                     url: url,
                     type: 'GET',
@@ -99,8 +99,7 @@ console.log(leadObj.Description);
                             var urlsplit = fanPageUrl[1].split('/')
                             var fanPageId = urlsplit[urlsplit.length - 1];
 
-                            // Pega o número de likes e telefone
-
+                            
                             var pageFacebook = 'https://graph.facebook.com/' + fanPageId + token;
                             console.log(pageFacebook);
                             jQuery.ajax({
@@ -110,14 +109,14 @@ console.log(leadObj.Description);
                                 headers: {
                                     "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko/20100101 Firefox/11.0"
                                 },
-
+                                // Vai buscar quantidade de likes e telefone se você o ID do Facebook foi encontrado
                                 success: function(data) {
                                     
-                                  //  data = JSON.parse(pageFacebook.responseText);
+                                  
                                     var likes = data.likes;
                                     console.log(likes, data);
                                     var phone = data.phone;
-                                    //leadObj.Quantidade_fas_seguidores__c = likes;
+                                    // Ajusta o valor do campo Quantidade_fas_Seguidores conforme o número de likes
                                     if (likes >= 0 && likes < 1000) {
                                         leadObj.Quantidade_fas_seguidores__c = "0 - 1000"
                                     }; else if (likes >= 1000 && likes < 10000) {
@@ -132,6 +131,7 @@ console.log(leadObj.Description);
                                         leadObj.Quantidade_fas_seguidores__c = "Mais que 1.000.000"
                                     };
                                     console.log(leadObj.Quantidade_fas_seguidores__c);
+                                    //Insere o telefone se o atual estiver vazio
                                     if (leadObj.Phone == '') {
                                         leadObj.Phone = phone
                                     };
@@ -152,13 +152,6 @@ console.log(leadObj.Description);
 
             };
 
-
-            // if (result[0].getBoolean("success")) {
-            //     alert("Lead " + result[0].Name + " atualizado");
-            // } else {
-            //     alert("Falha em atualizar o lead " + result[0]);
-            // }
-
     } catch (e) {
         alert(e);
     }
@@ -169,6 +162,7 @@ console.log("OI")
 function finishHim() {
     count++;
 console.log(count, cLeads, "logando")
+// Da reload na pagina
     if (count == cLeads) {
         result = sforce.connection.update(leads);
         console.log(count, result);
