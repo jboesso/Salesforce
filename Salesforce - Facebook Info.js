@@ -1,4 +1,4 @@
-{!REQUIRESCRIPT("/soap/ajax/33.0/connection.js")}
+{!REQUIRESCRIPT("/soap/ajax/33.0/connection.js")} 
 {!REQUIRESCRIPT("//code.jquery.com/jquery-2.1.4.min.js")}
 
 jQuery.ajax = (function(_ajax) {
@@ -67,105 +67,131 @@ var records = {!GETRECORDIDS($ObjectType.Lead)};
 
 var newRecords = [];
 var content = '';
+var count = 0;
+
+var changeLead = function(url, lead) {
+    jQuery.ajax({
+        url: url,
+        type: 'GET',
+        headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko/20100101 Firefox/11.0"
+        },
+        success: function(html) {
+            try {
+                content = html;
+                var fanPageUrl = content.responseText.match(/href="[^f]*(facebook.com\/[^\"]*)/);
+                var token = '?access_token=CAADqGJ3Nqn0BAHYelBfvghhQpdNoivZBxfolGk2wYLxFZAYFGdxv6enPuAhryJAIejiPNca5VCJ6pDKkUcos3PD97fG09K8wHkCAj8KoOma9XM98dSGsIsR2QUxUZCn5U3SAqiX22oMCEQIFoEuzGiATexZAZCDY0NbbLLCoEGNsJXloT98LPXd0wW3I4XYpNpHcVJUEihZBBNGmqzt3qH&expires=5184000'
+
+                if (fanPageUrl !== null && fanPageUrl != 'pages') {
+                    var urlsplit = fanPageUrl[1].split('/')
+                    var fanPageId = urlsplit[urlsplit.length - 1];
+
+
+                    var pageFacebook = 'https://graph.facebook.com/' + fanPageId + token;
+                    jQuery.ajax({
+                        url: pageFacebook,
+                        type: 'GET',
+                        dataType: "jsonp",
+                        headers: {
+                            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko/20100101 Firefox/11.0"
+                        },
+                        // Vai buscar quantidade de likes e telefone se você o ID do Facebook foi encontrado
+                        success: function(data) {
+
+                            try {
+                                var likes = data.likes;
+                                console.log('likesdata',likes, data);
+                                var phone = data.phone;
+                                // Ajusta o valor do campo Quantidade_fas_Seguidores conforme o número de likes
+                                if (likes >= 0 && likes < 1000) {
+                                    lead.Quantidade_fas_seguidores__c = "0 - 1000"
+                                } else if (likes >= 1000 && likes < 10000) {
+                                    lead.Quantidade_fas_seguidores__c = "1.000 - 10.000"
+                                } else if (likes >= 10000 && likes < 100000) {
+                                    lead.Quantidade_fas_seguidores__c = "10.000 - 100.000"
+                                } else if (likes >= 100000 && likes < 500000) {
+                                    lead.Quantidade_fas_seguidores__c = "100.000 - 500.000"
+                                } else if (likes >= 500000 && likes < 1000000) {
+                                    lead.Quantidade_fas_seguidores__c = "500.000 - 1.000.000"
+                                } else if (likes >= 1000000) {
+                                    lead.Quantidade_fas_seguidores__c = "Mais que 1.000.000"
+                                };
+                                console.log('fasseguidores',lead.Quantidade_fas_seguidores__c);
+                                //Insere o telefone se o atual estiver vazio
+                                if (lead.Phone == '') {
+                                    lead.Phone = phone
+                                };
+                                console.log("Nigga Flip Maneuver")
+                                console.log(url)
+                                finishHim();
+                            } catch (e) {
+                                console.log("Erro da nega puta",e, n);
+                                finishHim();
+                            }
+
+
+                        },
+                        error: function(err) {
+                            //alert("Deu erro.");
+                            console.log(err);
+
+                            console.log(url)
+                            finishHim();
+                        },
+
+                    });
+
+                } else {
+                    finishHim();
+
+                }
+
+            } catch (e ) {
+                console.log('antes do ultimo ajax e facebook', e)
+                finishHim();
+            }
+        },
+        error: function() {
+            finishHim();
+        }
+    });
+}
 
 if (records.length < 1) {
     alert("Por favor selecione algum lead");
 } else {
     var r = confirm("Clique ''OK'' para buscar as informações no Facebook");
     if (r == true) {
-        try {
-            var leads = sforce.connection.retrieve("Id,Website,Quantidade_fas_seguidores__c,Description", "Lead", records);
-
-            var cLeads = records.length;
-            for (var n = 0; n < cLeads; n++) {
-                var leadObj = leads[n];
-                var url = leadObj.Website;
-                console.log(leadObj.Quantidade_fas_seguidores__c);
-                console.log(leadObj.Description);
-                var fanBase = leadObj.Quantidade_fas_seguidores__c;
+        var leads = sforce.connection.retrieve("Id,Website,Quantidade_fas_seguidores__c,Description", "Lead", records);
+        console.log(leads)
+        var cLeads = records.length;
+        for (var n = 0; n < cLeads; n++) {
+            var url = leads[n].Website;
+            console.log(leads[n].Id,"VAITOMANOCU",typeof url, n)
+            if (url && url !== null) {
+                var fanBase = leads[n].Quantidade_fas_seguidores__c;
                 // Le a pagina do usuário procurando pelo URL do facebook    
-                jQuery.ajax({
-                    url: url,
-                    type: 'GET',
-                    headers: {
-                        "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko/20100101 Firefox/11.0"
-                    },
-                    success: function(html) {
-                        content = html;
-                        var fanPageUrl = content.responseText.match(/href="[^f]*(facebook.com\/[^\"]*)/);
-                        var token = '?access_token=CAADqGJ3Nqn0BAHYelBfvghhQpdNoivZBxfolGk2wYLxFZAYFGdxv6enPuAhryJAIejiPNca5VCJ6pDKkUcos3PD97fG09K8wHkCAj8KoOma9XM98dSGsIsR2QUxUZCn5U3SAqiX22oMCEQIFoEuzGiATexZAZCDY0NbbLLCoEGNsJXloT98LPXd0wW3I4XYpNpHcVJUEihZBBNGmqzt3qH&expires=5184000'
+                changeLead(url, leads[n]);
 
-                        if (fanPageUrl !== null && fanPageUrl != 'pages') {
-                            var urlsplit = fanPageUrl[1].split('/')
-                            var fanPageId = urlsplit[urlsplit.length - 1];
-
-                            
-                            var pageFacebook = 'https://graph.facebook.com/' + fanPageId + token;
-                            console.log(pageFacebook);
-                            jQuery.ajax({
-                                url: pageFacebook,
-                                type: 'GET',
-                                dataType: "jsonp",
-                                headers: {
-                                    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko/20100101 Firefox/11.0"
-                                },
-                                // Vai buscar quantidade de likes e telefone se você o ID do Facebook foi encontrado
-                                success: function(data) {
-                                    
-                                  
-                                    var likes = data.likes;
-                                    console.log(likes, data);
-                                    var phone = data.phone;
-                                    // Ajusta o valor do campo Quantidade_fas_Seguidores conforme o número de likes
-                                    if (likes >= 0 && likes < 1000) {
-                                        leadObj.Quantidade_fas_seguidores__c = "0 - 1000"
-                                    }; else if (likes >= 1000 && likes < 10000) {
-                                        leadObj.Quantidade_fas_seguidores__c = "1.000 - 10.000"
-                                    }; else if (likes >= 10000 && likes < 100000) {
-                                        leadObj.Quantidade_fas_seguidores__c = "10.000 - 100.000"
-                                    }; else if (likes >= 100000 && likes < 500000) {
-                                        leadObj.Quantidade_fas_seguidores__c = "100.000 - 500.000"
-                                    }; else if ( likes >= 500000 && likes < 1000000) {
-                                        leadObj.Quantidade_fas_seguidores__c = "500.000 - 1.000.000"
-                                    }; else if (likes >= 1000000) {
-                                        leadObj.Quantidade_fas_seguidores__c = "Mais que 1.000.000"
-                                    };
-                                    console.log(leadObj.Quantidade_fas_seguidores__c);
-                                    //Insere o telefone se o atual estiver vazio
-                                    if (leadObj.Phone == '') {
-                                        leadObj.Phone = phone
-                                    };
-                                    finishHim();
-
-                                },
-                                error: function(err) {
-                                    alert("Deu erro.");
-                                    console.log(err);
-                                },
-
-                            });
-
-
-                        }
-                    },
-                });
-
+            } else {
+                finishHim();
             };
-
-    } catch (e) {
-        alert(e);
-    }
+        }
     }
 }
-var count = 0;
-console.log("OI")
+
+console.log("Hello World")
+
+
 function finishHim() {
     count++;
-console.log(count, cLeads, "logando")
-// Da reload na pagina
+    console.log(count, cLeads, "logando")
+        // Da reload na pagina
     if (count == cLeads) {
+        alert("Clique em ''OK'' para atualizar os leads")
+       
         result = sforce.connection.update(leads);
-        console.log(count, result);
+        console.log('count final',count, result);
         window.location.reload();
+    };
     }
-}
