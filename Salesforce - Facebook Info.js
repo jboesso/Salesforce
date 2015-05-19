@@ -130,16 +130,19 @@ var changeLead = function(url, lead) {
                                 console.log('fasseguidores',lead.Quantidade_fas_seguidores__c);
                                 if ( lead.Quantidade_fas_seguidores__c != null ) {
                                     countSuccess.push("success")
+                                } else {
+                                       lead.Quantidade_fas_seguidores__c = "Not available"
                                 };
                                 //Insere o telefone se o atual estiver vazio
                                 if (lead.Phone == '') {
                                     lead.Phone = phone
                                 };
-                                console.log("Nigga Flip Maneuver")
+                                console.log("Erro segundo IF")
                                 console.log(url)
                                 finishHim();
                             } catch (e) {
-                                console.log("Erro da nega puta",e, n);
+                                console.log("Erro primeiro try",e, n);
+                                lead.Quantidade_fas_seguidores__c = "Not available";
                                 finishHim();
                             }
 
@@ -148,16 +151,17 @@ var changeLead = function(url, lead) {
                         error: function(err) {
                             //alert("Deu erro.");
                             console.log(err);
-
-                            console.log(url)
+                            console.log(url);
+                            lead.Quantidade_fas_seguidores__c = "Not available";
                             finishHim();
                         },
 
                     });
 
                 } else {
-                    console.log("ultimo else")
-                    countFailure.push("error")
+                    lead.Quantidade_fas_seguidores__c = "Not available";
+                    console.log("ultimo else");
+                    countFailure.push("error");
                     
                     finishHim();
 
@@ -165,11 +169,14 @@ var changeLead = function(url, lead) {
                 }
 
             } catch (e ) {
-                console.log('antes do ultimo ajax e facebook', e)
+                console.log('antes do ultimo ajax e facebook', e);
+                lead.Quantidade_fas_seguidores__c = "Not available";
+
                 finishHim();
             }
         },
         error: function() {
+            lead.Quantidade_fas_seguidores__c = "Not available"
             finishHim();
         }
     });
