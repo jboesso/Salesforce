@@ -68,6 +68,16 @@ var records = {!GETRECORDIDS($ObjectType.Lead)};
 var newRecords = [];
 var content = '';
 var count = 0;
+var countSuccess = [];
+var countFailure = [];
+
+var pegaFb = function(conteudo){
+    if(conteudo.match(/href="[^f]*(facebook.com\/[^\"]*)/)){
+        return conteudo.match(/href="[^f]*(facebook.com\/[^\"]*)/)
+    }else{
+        return conteudo.match(/href="[^f]*(facebook.com.br\/[^\"]*)/)
+    }
+}
 
 var changeLead = function(url, lead) {
     jQuery.ajax({
@@ -79,7 +89,7 @@ var changeLead = function(url, lead) {
         success: function(html) {
             try {
                 content = html;
-                var fanPageUrl = content.responseText.match(/href="[^f]*(facebook.com\/[^\"]*)/);
+                var fanPageUrl = pegaFb(content.responseText);
                 var token = '?access_token=CAADqGJ3Nqn0BAHYelBfvghhQpdNoivZBxfolGk2wYLxFZAYFGdxv6enPuAhryJAIejiPNca5VCJ6pDKkUcos3PD97fG09K8wHkCAj8KoOma9XM98dSGsIsR2QUxUZCn5U3SAqiX22oMCEQIFoEuzGiATexZAZCDY0NbbLLCoEGNsJXloT98LPXd0wW3I4XYpNpHcVJUEihZBBNGmqzt3qH&expires=5184000'
 
                 if (fanPageUrl !== null && fanPageUrl != 'pages') {
@@ -116,7 +126,11 @@ var changeLead = function(url, lead) {
                                 } else if (likes >= 1000000) {
                                     lead.Quantidade_fas_seguidores__c = "Mais que 1.000.000"
                                 };
+                                
                                 console.log('fasseguidores',lead.Quantidade_fas_seguidores__c);
+                                if ( lead.Quantidade_fas_seguidores__c != null ) {
+                                    countSuccess.push("success")
+                                };
                                 //Insere o telefone se o atual estiver vazio
                                 if (lead.Phone == '') {
                                     lead.Phone = phone
@@ -142,7 +156,11 @@ var changeLead = function(url, lead) {
                     });
 
                 } else {
+                    console.log("ultimo else")
+                    countFailure.push("error")
+                    
                     finishHim();
+
 
                 }
 
@@ -188,7 +206,7 @@ function finishHim() {
     console.log(count, cLeads, "logando")
         // Da reload na pagina
     if (count == cLeads) {
-        alert("Clique em ''OK'' para atualizar os leads")
+        alert("Foram encontrados informações de "+countSuccess.length+" leads\ne "+countFailure.length+" ficaram sem atualização")
        
         result = sforce.connection.update(leads);
         console.log('count final',count, result);
