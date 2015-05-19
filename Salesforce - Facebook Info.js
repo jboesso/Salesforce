@@ -114,7 +114,7 @@ var changeLead = function(url, lead) {
                                 var phone = data.phone;
                                 // Ajusta o valor do campo Quantidade_fas_Seguidores conforme o número de likes
                                 if (likes >= 0 && likes < 1000) {
-                                    lead.Quantidade_fas_seguidores__c = "0 - 1000"
+                                    lead.Quantidade_fas_seguidores__c = "0 - 1.000"
                                 } else if (likes >= 1000 && likes < 10000) {
                                     lead.Quantidade_fas_seguidores__c = "1.000 - 10.000"
                                 } else if (likes >= 10000 && likes < 100000) {
