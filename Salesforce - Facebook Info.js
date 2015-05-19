@@ -206,7 +206,7 @@ function finishHim() {
     console.log(count, cLeads, "logando")
         // Da reload na pagina
     if (count == cLeads) {
-        alert("Foram encontrados informações de "+countSuccess.length+" leads\ne "+countFailure.length+" ficaram sem atualização")
+        alert("Foram encontrados informações de "+countSuccess.length+" lead(s)\ne "+countFailure.length+" ficaram sem atualização")
        
         result = sforce.connection.update(leads);
         console.log('count final',count, result);
