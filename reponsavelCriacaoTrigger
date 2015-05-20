@@ -1,0 +1,10 @@
+trigger criadorBDL on Opportunity (before update) {
+    
+    for (Opportunity a: Trigger.new) {
+        if ( a.responsavelCriacao__c == '') {
+            String idCriador = a.CreatedById;
+			//a.addError(a.CreatedById);
+        	a.responsavelCriacao__c = idCriador;
+        }
+	}
+}

@@ -1,0 +1,17 @@
+@isTest 
+private class testresponsavelCriacao {
+    static testMethod void validateresponsavelCriacao() {
+       Opportunity b = new Opportunity(Name='Oportunidade de teste', CloseDate = Date.today(), StageName = 'Prospecting');
+       System.debug('Reponsavel de criacao antes da trigger: ' + b.responsavelCriacao__c);
+
+       // Insert Opportunity
+       insert b;
+    
+       // Retrieve the new book
+       b = [SELECT responsavelCriacao__c, CreatedById FROM Opportunity WHERE Id =:b.Id];
+       System.debug('Responsavel de criacao depois da trigger: ' + b.responsavelCriacao__c);
+
+       // Test that the trigger correctly updated the price
+       System.assertEquals(b.CreatedById, b.responsavelCriacao__c);
+    }
+}
