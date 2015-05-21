@@ -27,7 +27,7 @@ function finishHim() {
 if (recordsLeads.length < 1) {
     alert("Por favor selecione algum lead");
 } 	else {
-	    var r = confirm("Clique ''OK'' para para desqualificar os leads que já são clientes");
+	    var r = confirm("Clique ''OK'' para desqualificar os leads que já são clientes");
 		if (r) {
 		        var leads = sforce.connection.retrieve("Id,domain__c,Status,Motivo__c", "Lead", recordsLeads);
 		        var contacts = sforce.connection.query("select Id, domain__c from Contact where domain__c != null");

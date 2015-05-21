@@ -192,7 +192,7 @@ if (records.length < 1) {
         var cLeads = records.length;
         for (var n = 0; n < cLeads; n++) {
             var url = leads[n].Website;
-            console.log(leads[n].Id,"VAITOMANOCU",typeof url, n)
+            console.log(leads[n].Id,"Salesforce",typeof url, n)
             if (url && url !== null) {
                 var fanBase = leads[n].Quantidade_fas_seguidores__c;
                 // Le a pagina do usuário procurando pelo URL do facebook    
