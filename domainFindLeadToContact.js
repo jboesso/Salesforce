@@ -29,48 +29,56 @@ if (recordsLeads.length < 1) {
 } 	else {
 	    var r = confirm("Clique ''OK'' para desqualificar os leads que já são clientes");
 		if (r) {
-		        var leads = sforce.connection.retrieve("Id,domain__c,Status,Motivo__c", "Lead", recordsLeads);
-		        var contacts = sforce.connection.query("select Id, domain__c from Contact where domain__c != null");
-		        fullContacts = fullContacts.concat(contacts.records)
-		        console.log(contacts.records.length)
-		        //var contactsClientesInativos = sforce.connection.query("select Id, domain__c from Contact where domain__c != null AND Account.Type = 'Cliente Inativo'");
-		        var limit = 2000
-		        var pagination = Math.ceil(contacts.size / limit)
-		        for ( var cc = 1; cc < pagination;cc++) {
-		        	//var startLine = limit * cc
-		        	var contactsClientes = sforce.connection.query("select Id, domain__c from Contact where domain__c != null OFFSET " + limit)
-		        	fullContacts = fullContacts.concat(contactsClientes.records);
-		        	console.log(fullContacts.length)
-		        	
+		        var leads = sforce.connection.retrieve("Id,domain__c,LeadSource,Status,Motivo__c", "Lead", recordsLeads);
+		        console.log(leads, leads[0].LeadSource)
+		        for ( var t = 0; t < leads; t++) {
+		        	if(leads[t].LeadSource = 'Outbound') {
+		        		console.log(leads[t]);
+		        		alert("Existem leads que não são de origem Outbound selecionados");	
+		        	}
 		        }
 
-	    		for (var i=0;i<fullContacts.length;i++) {
-					if (uniqueDomains.indexOf(fullContacts[i].domain__c) == -1){
-		        	uniqueDomains.push(fullContacts[i].domain__c);		
-					} 
-				}
+					var contacts = sforce.connection.query("select Id, domain__c from Contact where domain__c != null");
+			        fullContacts = fullContacts.concat(contacts.records)
+			        console.log(contacts.records.length)
+			        //var contactsClientesInativos = sforce.connection.query("select Id, domain__c from Contact where domain__c != null AND Account.Type = 'Cliente Inativo'");
+			        var limit = 2000
+			        var pagination = Math.ceil(contacts.size / limit)
+			        for ( var cc = 1; cc < pagination;cc++) {
+			        	//var startLine = limit * cc
+			        	var contactsClientes = sforce.connection.query("select Id, domain__c from Contact where domain__c != null OFFSET " + limit)
+			        	fullContacts = fullContacts.concat(contactsClientes.records);
+			        	console.log(fullContacts.length)
+		        	}
 
-				var cLeads = recordsLeads.length
-				for (var n = 0; n < cLeads; n++) {
-        	    	var domain = leads[n].domain__c;
-	            	console.log(leads[n].Id,"Salesforce",leads[n].domain__c, n)
-	            	if (leads[n].domain__c && leads[n].domain__c !== null) {
-		                // Le a pagina do usuário procurando pelo URL do facebook    
-				        if (uniqueDomains.indexOf(leads[n].domain__c) != -1 ) {
-							leads[n].Status = 'Desqualificado';
-							leads[n].Motivo__c = 'Cliente';
-							countSuccess.push('Cliente');
-							console.log("log indexof leads",leads[n].domain__c)
-							finishHim();
-						} else {
-		              	  finishHim();
-		            } 
-				   	} else {
-		                finishHim();
-        		}
-			}
-		}
-	}	
+		    		for (var i=0;i<fullContacts.length;i++) {
+						if (uniqueDomains.indexOf(fullContacts[i].domain__c) == -1){
+			        	uniqueDomains.push(fullContacts[i].domain__c);		
+						} 
+					}
+
+					var cLeads = recordsLeads.length
+					for (var n = 0; n < cLeads; n++) {
+	        	    	var domain = leads[n].domain__c;
+		            	console.log(leads[n].Id,"Salesforce",leads[n].domain__c, n)
+		            	if (leads[n].domain__c && leads[n].domain__c !== null) {
+			                // Le a pagina do usuário procurando pelo URL do facebook    
+					        if (uniqueDomains.indexOf(leads[n].domain__c) != -1 ) {
+								leads[n].Status = 'Desqualificado';
+								leads[n].Motivo__c = 'Cliente';
+								countSuccess.push('Cliente');
+								console.log("log indexof leads",leads[n].domain__c)
+								finishHim();
+							} else {
+			              	  finishHim();
+			         		} 
+					   	} else {
+			                finishHim();
+	        			}
+					}
+				}	
+	}
+	
 
                
 		        
