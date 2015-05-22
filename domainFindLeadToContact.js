@@ -17,7 +17,7 @@ function finishHim() {
 	console.log(count, cLeads, "logando")
 	    // Da reload na pagina
 	if (count == cLeads) {
-	    alert("Foram encontrados "+countSuccess.length+" leads que já são clientes\ne "+(recordsLeads.length-countSuccess.length)+" são novos")
+	    alert("Foram encontrados "+countSuccess.length+" leads que já são clientes\ne "+(recordsLeads.length-countSuccess.length)+" são novos ou não são Outbound")
 	    result = sforce.connection.update(leads);
 	    console.log('count final',count, result);
 	    window.location.reload();
@@ -28,23 +28,16 @@ if (recordsLeads.length < 1) {
     alert("Por favor selecione algum lead");
 } 	else {
 	    var r = confirm("Clique ''OK'' para desqualificar os leads que já são clientes");
-		if (r) {
-		        var leads = sforce.connection.retrieve("Id,domain__c,LeadSource,Status,Motivo__c", "Lead", recordsLeads);
-		        console.log(leads, leads[0].LeadSource)
-		        for ( var t = 0; t < leads; t++) {
-		        	if(leads[t].LeadSource = 'Outbound') {
-		        		console.log(leads[t]);
-		        		alert("Existem leads que não são de origem Outbound selecionados");	
-		        	}
-		        }
-
-					var contacts = sforce.connection.query("select Id, domain__c from Contact where domain__c != null");
+	    if (r) {
+		    		var leads = sforce.connection.retrieve("Id,domain__c,LeadSource,Status,Motivo__c", "Lead", recordsLeads);
+					console.log(leads, leads[0].LeadSource)
+			 		var contacts = sforce.connection.query("select Id, domain__c from Contact where domain__c != null");
 			        fullContacts = fullContacts.concat(contacts.records)
 			        console.log(contacts.records.length)
 			        //var contactsClientesInativos = sforce.connection.query("select Id, domain__c from Contact where domain__c != null AND Account.Type = 'Cliente Inativo'");
 			        var limit = 2000
 			        var pagination = Math.ceil(contacts.size / limit)
-			        for ( var cc = 1; cc < pagination;cc++) {
+			        for ( var cc = 0; cc < pagination;cc++) {
 			        	//var startLine = limit * cc
 			        	var contactsClientes = sforce.connection.query("select Id, domain__c from Contact where domain__c != null OFFSET " + limit)
 			        	fullContacts = fullContacts.concat(contactsClientes.records);
@@ -61,7 +54,7 @@ if (recordsLeads.length < 1) {
 					for (var n = 0; n < cLeads; n++) {
 	        	    	var domain = leads[n].domain__c;
 		            	console.log(leads[n].Id,"Salesforce",leads[n].domain__c, n)
-		            	if (leads[n].domain__c && leads[n].domain__c !== null) {
+		            	if (leads[n].domain__c && leads[n].domain__c !== null && leads[n].LeadSource == 'Outbound') {
 			                // Le a pagina do usuário procurando pelo URL do facebook    
 					        if (uniqueDomains.indexOf(leads[n].domain__c) != -1 ) {
 								leads[n].Status = 'Desqualificado';
@@ -77,7 +70,8 @@ if (recordsLeads.length < 1) {
 	        			}
 					}
 				}	
-	}
+			}
+		
 	
 
                
