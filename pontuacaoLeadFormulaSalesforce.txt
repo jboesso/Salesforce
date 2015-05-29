@@ -1,0 +1,104 @@
+//Número de funcionários
+if(OR(
+	ispickval(N_mero_de_Funcion_rios__c,"Autônomo"),
+	ispickval(N_mero_de_Funcion_rios__c,"1-10 funcionários")),1,
+if(ispickval(N_mero_de_Funcion_rios__c,"11-50 funcionários"),2,
+if(ispickval(N_mero_de_Funcion_rios__c,"51-200 funcionários"),3,
+if(ispickval(N_mero_de_Funcion_rios__c,"201-500 funcionários"),4,
+	if(ispickval(N_mero_de_Funcion_rios__c,""),0,5)))))+
+
+//Existe alguma área de Social	
+if(Existe_uma_rea_de_Social__c = true,5,2)+
+
+//Trabalha com alguma plataforma	
+if(Utiliza_alguma_plataforma_atualmente__c = true,2,5)+
+	
+//Quantidade de profissionais na área de social
+if(ispickval(Quantidade_profissionais_social__c, "1 meio período"),0.5,
+	if(ispickval(Quantidade_profissionais_social__c,"1 dedicado"),2,
+		if(ispickval(Quantidade_profissionais_social__c,"2 até 4"),4,
+			if(ispickval(Quantidade_profissionais_social__c,"mais de 4"),5,0))))+
+
+// Quantidade de fãs e seguidores
+if(ispickval(Quantidade_fas_seguidores__c,"0 - 1.000"),0,
+	if(ispickval(Quantidade_fas_seguidores__c,"1.000 - 10.000"),1,
+		if(ispickval(Quantidade_fas_seguidores__c,"10.000 - 100.000"),2,
+			if(ispickval(Quantidade_fas_seguidores__c,"100.000 - 500.000"),3,
+				if(ispickval(Quantidade_fas_seguidores__c,"500.000 - 1.000.000"),4,
+					if(ispickval(N_mero_de_Funcion_rios__c,""),0,5))))))+
+
+//Tipo de cliente
+if(or(
+	ispickval(Perfil_do_lead__c,""),
+	ispickval(Perfil_do_lead__c,"Acadêmico")),0,5)+
+
+//Quais as Redes sociais trabalhadas
+if(includes(Quais_redes_sociais_trabalhadas__c,"Google +"),1,0)+
+if(includes(Quais_redes_sociais_trabalhadas__c,"Google"),1,0)+
+if(includes(Quais_redes_sociais_trabalhadas__c,"Facebook"),2,0)+
+if(includes(Quais_redes_sociais_trabalhadas__c,"YouTube"),2,0)+
+if(includes(Quais_redes_sociais_trabalhadas__c,"FourSquare"),0.5,0)+
+if(includes(Quais_redes_sociais_trabalhadas__c,"Linkedin"),1,0)+
+if(includes(Quais_redes_sociais_trabalhadas__c,"Instagram"),1,0)+
+if(includes(Quais_redes_sociais_trabalhadas__c,"Reclame Aqui"),2,0)+
+if(includes(Quais_redes_sociais_trabalhadas__c,"Twitter"),2,0)+
+//if(includes(Quais_redes_sociais_trabalhadas__c,"Flickr"),0.5,0)+
+//if(includes(Quais_redes_sociais_trabalhadas__c,"Wordpress"),1,0)+
+//if(includes(Quais_redes_sociais_trabalhadas__c,"RSS"),1,0)+
+//if(includes(Quais_redes_sociais_trabalhadas__c,"Slideshare"),1,0)+
+//if(includes(Quais_redes_sociais_trabalhadas__c,"Vimeo"),1,0)+
+//if(includes(Quais_redes_sociais_trabalhadas__c,"Tumblr"),1,0)+
+
+//Necessidades de Social	
+if(includes(Resultado_esperado__c,"Atendimento Ao Cliente"),1,0)+
+if(includes(Resultado_esperado__c,"Aumento de Vendas"),1,0)+
+if(includes(Resultado_esperado__c,"Diagnostico ou fortalecimento da Marca"),1,0)+
+if(includes(Resultado_esperado__c,"Identificar Influenciadores"),1,0)+
+if(includes(Resultado_esperado__c,"Prevenção ou gestão de crises"),1,0)+
+if(includes(Resultado_esperado__c,"Monitorar Concorrência"),1,0)+
+if(includes(Resultado_esperado__c,"Pesquisa de Mercado"),1,0)+
+if(includes(Resultado_esperado__c,"Melhorar a gestão das redes sociais"),5,0)+
+
+// Departamento do lead
+if(ispickval(Departamento__c,"Outro"),1,
+	if(ispickval(Departamento__c,""),0,
+		if(ispickval(Departamento__c,"Digital marketing"),5,
+			if(ispickval(Departamento__c,"Vendas / Comercial"),3,
+				if (ispickval(Departamento__c,"SEO e Performance"),3,4)))))+
+				
+
+// Cargo do lead
+if(or(
+	ispickval(Cargo__c,"Estagiário"),
+	ispickval(Cargo__c,"")),0,
+	if(ispickval(Cargo__c,"Analista"),1,
+		if(ispickval(Cargo__c,"Analista Sr"),3,
+			if(or(
+				ispickval(Cargo__c,"Coordenador"),
+				ispickval(Cargo__c,"Especialista"),
+				ispickval(Cargo__c,"Consultor")),4,
+						if(or(
+							ispickval(Cargo__c,"Gerente"),
+							ispickval(Cargo__c,"Diretor"),
+							ispickval(Cargo__c,"Presidente / Sócio")),5,0.5)))))+
+
+if(isblank(FirstName),0,0.5)+
+if(isblank(LastName),0,0.5)+
+if(isblank(Email),0,1)+
+if(isblank(Company),0,1)+
+if(isblank(Phone),0,2)+
+if(isblank(domain__c),0,1)+
+
+//Origem do Lead
+if(or(
+	ispickval(LeadSource,"Campanha"),
+	ispickval(LeadSource,"Conteúdo"),
+	ispickval(LeadSource,"Régua de relacionamento"),
+	ispickval(LeadSource,"Social")),2,
+	if(ispickval(LeadSource,"Demonstração"),4,
+		if(ispickval(LeadSource,"Email Comercial"),5,
+			if(ispickval(LeadSource,"Formulário Contato"),5,
+				if(ispickval(LeadSource,"Ligação"),5,
+					if(ispickval(LeadSource,"Outbound"),1,
+						if(ispickval(LeadSource,""),0,3)))))))
+
